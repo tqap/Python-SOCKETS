@@ -1,4 +1,8 @@
 import platform
 
-print("Network Sweeper Initialized.")
-print(f"Target OS: {platform.system()}")
+system = platform.system()
+
+if system == "Windows":
+    param = "-n"
+else:
+    param = "-c"
