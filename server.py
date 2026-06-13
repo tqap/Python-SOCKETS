@@ -3,7 +3,7 @@ import threading
 
 HEADER = 64
 PORT = 5050
-# SERVER = "192.168.1.165" # To manually specify ip of server
+# SERVER = "192.168.1.165" # If you want to manually specify ip of server
 SERVER = socket.gethostbyname(socket.gethostname()) # Automatically sets IP with your machine local IP
 ADDR = (SERVER, PORT)
 FORMAT = 'utf-8'
