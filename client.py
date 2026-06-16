@@ -4,7 +4,7 @@ HEADER = 64
 PORT = 5050
 FORMAT = 'utf-8'
 DISCONNECT_MESSAGE = "!DISCONNECT"
-SERVER = "192.168.1.165"
+SERVER = "192.168.1.156"
 ADDR = (SERVER,PORT)
 
 
@@ -18,3 +18,15 @@ def send(msg):
     send_length += b' ' * (HEADER - len(send_length))
     client.send(send_length)
     client.send(message)
+
+print(f"Connected succesfully to [{SERVER}]")
+print("Type !DISCONNECT to disconnect ...")
+
+send("Hello from macbook :)")
+
+while True:
+    client_message = input("Input: ")
+    send(client_message)
+
+    if client_message == "!DISCONNECT":
+        break

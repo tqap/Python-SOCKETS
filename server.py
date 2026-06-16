@@ -24,32 +24,41 @@ def handle_client(conn, addr):
     while connected:
         # We first receive a fixed-length header that tells us how long the incoming message is.
         # Data comes in as bytes, so we .decode() it into a readable string.
-        msg_length = conn.recv(HEADER).decode(FORMAT)
-        
-        # If the client actually sent a message (so msg_length isn't blank)
-        if msg_length: 
-            msg_length = int(msg_length)
+        try:
+            msg_length = conn.recv(HEADER).decode(FORMAT)
+            
+            # If the client actually sent a message (so msg_length isn't blank)
+            if msg_length: 
+                msg_length = int(msg_length)
 
-            # Now we know exactly how many bytes to receive, so we don't grab too much or too little.
-            msg = conn.recv(msg_length).decode(FORMAT)
-            
-            # Disconnect the client, if we don't do this, the server might crash or keep a "ghost" connection open.
-            if msg == DISCONNECT_MESSAGE:
-                connected = False
-            
-            print(f"[{addr}] {msg}")
+                # Now we know exactly how many bytes to receive, so we don't grab too much or too little.
+                msg = conn.recv(msg_length).decode(FORMAT)
+                
+
+                print(f"[{addr}] {msg}")
+                # Disconnect the client, if we don't do this, the server might crash or keep a "ghost" connection open.
+                if msg == DISCONNECT_MESSAGE:
+                    connected = False
+                
+        except ConnectionResetError:
+            print(f"[-] {addr} lost connection")
+            break
 
     # Always close the connection once the loop ends to free up network resources
     conn.close()
+    print(f"Client [{addr}] has disconnected")
+    print(f"[Active Connections] {threading.active_count() - 2}")
 
 
 
 def start():
     server.listen()
-    conn, addr = server.accept()
-    thread = threading.Thread(target=handle_client, args=(conn, addr))
-    thread.start()
-    print(f"[Active Connections] {threading.active_count() - 1}") #We do -1 because server is always listening which will count as a thread
+
+    while True:
+        conn, addr = server.accept()
+        thread = threading.Thread(target=handle_client, args=(conn, addr))
+        thread.start()
+        print(f"[Active Connections] {threading.active_count() - 1}") #We do -1 because server is always listening which will count as a thread
 
 
 print("Server is starting ...")
